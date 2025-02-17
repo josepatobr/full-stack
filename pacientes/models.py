@@ -1,10 +1,13 @@
 from django.db import models
 from datetime import *
 from django.urls import reverse
+from urllib.parse import urljoin
+from django.conf import settings
+
+BASE_URL = getattr(settings, "BASE_URL", None)
 
 
-
-class Pacientes(models.Model):
+class Paciente(models.Model):
     queixa_choices = (
         ('TDAH', 'TDAH'),
         ('DPS', 'Depressão'),
@@ -22,7 +25,12 @@ class Pacientes(models.Model):
     def __str__(self):
         return self.nome
 
-class Tarefas(models.Model):
+class meta:
+    verbose_name = "Paciente"
+    verbose_name_plural = "Pacientes"
+
+
+class Tarefa(models.Model):
     frequencia_choices = (
         ('D', 'Diário'),
         ('1S', '1 vez por semana'),
@@ -36,13 +44,17 @@ class Tarefas(models.Model):
 
     def __str__(self):
         return self.tarefa
-    
-class Consultas(models.Model):
+
+class meta:
+    verbose_name ="Tarefa"
+    verbose_name_plural = "Tarefas"
+
+class Consulta(models.Model):
     humor = models.PositiveIntegerField()
     registro_geral = models.TextField()
     video = models.FileField(upload_to="video")
-    tarefas = models.ManyToManyField(Tarefas)
-    paciente = models.ForeignKey(Pacientes, on_delete=models.CASCADE)
+    tarefas = models.ManyToManyField(Tarefa)
+    paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE)
     data = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -51,8 +63,19 @@ class Consultas(models.Model):
     @property
     def link_publico(self):
         return f"http://127.0.0.1:8000{reverse('consulta_publica', kwargs={'id': self.id})}"
+
+class Meta:
+    verbose_name = "Consulta"
+    verbose_name_plural = "Consultas"
     
 
-class Visualizacoes(models.Model):
-    consulta = models.ForeignKey(Consultas, on_delete=models.CASCADE)
+class Visualizacao(models.Model):
+    consulta = models.ForeignKey(Consulta, on_delete=models.CASCADE)
     ip = models.GenericIPAddressField()
+
+
+class Meta:
+    verbose_name = "Visualização"
+    verbose_name_plural = "Visualizações"
+
+
