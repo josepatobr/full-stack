@@ -79,7 +79,7 @@ def paciente_view(request: HttpRequest, id):
 
         messages.add_message(
             request, constants.SUCCESS, "Registro de consulta adicionado com sucesso."
-        )
+        ) 
         return redirect(f"/pacientes/{id}")
 
 
